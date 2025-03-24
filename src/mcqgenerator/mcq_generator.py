@@ -5,6 +5,7 @@ import os
 import json
 from langchain_core.prompts import ChatPromptTemplate
 from langchain.chains import LLMChain , SequentialChain
+import streamlit as st
 
 load_dotenv()
 
@@ -71,15 +72,7 @@ review_chain=LLMChain(llm=client,prompt=quiz_evaluation_prompt,output_key="revie
 generate_evaluate_chain=SequentialChain(chains=[quiz_chain,review_chain] , input_variables=["text","number","subject","tone","RESPONSE_JSON"] , output_variables=["quiz","review"],verbose=True)
 
 
-PATH = os.path.join(os.path.dirname(__file__), "../data.txt")
 
-with open(PATH,"r") as file:
-   TEXT = file.read()
-   
-   
-generate_evaluate_chain
-
-TEXT
 NUMBER=20
 SUBJECT="AI"
 TONE="Simple"
@@ -109,7 +102,16 @@ def generate_quiz_prompt(text, number, subject, tone, response_json):
         RESPONSE_JSON=json.dumps(response_json)
     ) 
 
-quiz_prompt = generate_quiz_prompt(TEXT, NUMBER, SUBJECT, TONE, RESPONSE_JSON)
-mcq_response = call_groq(quiz_prompt) 
+# quiz_prompt = generate_quiz_prompt(TEXT, NUMBER, SUBJECT, TONE, RESPONSE_JSON)
+# mcq_response = call_groq(quiz_prompt) 
+  
+st.title("MCQ Generator")
 
-print(mcq_response)
+question = st.text_area("Enter your Text for generate MCQs:",height=300)
+
+if st.button("Generate MCQs"):
+    quiz_prompt = generate_quiz_prompt(question, NUMBER, SUBJECT, TONE, RESPONSE_JSON)
+    mcq_response = call_groq(quiz_prompt)
+
+    st.text("Generated MCQs:")
+    st.write(mcq_response)
