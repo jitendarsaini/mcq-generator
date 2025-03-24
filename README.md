@@ -10,8 +10,6 @@ python --version
 
 conda --v
 
-conda create -p env
-
 conda --help
 
 source activate ./env
